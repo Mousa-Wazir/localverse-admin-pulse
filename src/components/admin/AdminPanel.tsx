@@ -6,6 +6,7 @@ import Dashboard from './Dashboard';
 import Products from './Products';
 import Orders from './Orders';
 import Customers from './Customers';
+import Reports from './Reports';
 import Settings from './Settings';
 
 interface AdminPanelProps {
@@ -41,6 +42,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout }) => {
         return <Orders />;
       case 'customers':
         return <Customers />;
+      case 'reports':
+        return <Reports />;
       case 'settings':
         return <Settings />;
       default:
