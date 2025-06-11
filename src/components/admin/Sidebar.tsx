@@ -19,6 +19,7 @@ interface SidebarProps {
   onToggle: () => void;
   currentPage: string;
   onPageChange: (page: string) => void;
+  onLogout?: () => void;
 }
 
 const menuItems = [
@@ -31,7 +32,13 @@ const menuItems = [
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
 
-const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, currentPage, onPageChange }) => {
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, currentPage, onPageChange, onLogout }) => {
+  const handleLogout = () => {
+    if (onLogout) {
+      onLogout();
+    }
+  };
+
   return (
     <>
       {/* Mobile Overlay */}
@@ -85,7 +92,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, currentPage, onPage
 
         {/* Logout */}
         <div className="absolute bottom-4 left-4 right-4">
-          <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200">
+          <button 
+            onClick={handleLogout}
+            className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200"
+          >
             <LogOut className="w-5 h-5" />
             <span>Logout</span>
           </button>

@@ -10,11 +10,15 @@ const Index = () => {
     setIsLoggedIn(true);
   };
 
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+  };
+
   if (!isLoggedIn) {
     return <AdminLogin onLogin={handleLogin} />;
   }
 
-  return <AdminPanel />;
+  return <AdminPanel onLogout={handleLogout} />;
 };
 
 export default Index;

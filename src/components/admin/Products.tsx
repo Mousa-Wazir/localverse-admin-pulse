@@ -1,10 +1,12 @@
 
 import React, { useState } from 'react';
 import { Plus, Search, Filter, Edit, Eye, MoreHorizontal } from 'lucide-react';
+import ProductDetail from './ProductDetail';
 
 const Products = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [viewingProduct, setViewingProduct] = useState(null);
 
   const products = [
     {
@@ -237,7 +239,10 @@ const Products = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     <div className="flex items-center space-x-2">
-                      <button className="p-1 rounded hover:bg-gray-100 transition-colors">
+                      <button 
+                        onClick={() => setViewingProduct(product)}
+                        className="p-1 rounded hover:bg-gray-100 transition-colors"
+                      >
                         <Eye className="w-4 h-4" />
                       </button>
                       <button 
@@ -258,7 +263,19 @@ const Products = () => {
         </div>
       </div>
 
-      {/* Modals */}
+      {/* Product Detail Modal */}
+      {viewingProduct && (
+        <ProductDetail 
+          product={viewingProduct} 
+          onClose={() => setViewingProduct(null)}
+          onEdit={(product) => {
+            setViewingProduct(null);
+            setSelectedProduct(product);
+          }}
+        />
+      )}
+
+      {/* Add/Edit Modals */}
       {showAddModal && (
         <ProductModal 
           product={null} 
