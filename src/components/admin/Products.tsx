@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Plus, Search, Filter, Edit, Eye, MoreHorizontal } from 'lucide-react';
 import ProductDetail from './ProductDetail';
 
@@ -7,6 +6,7 @@ const Products = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [viewingProduct, setViewingProduct] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const products = [
     {
@@ -46,6 +46,20 @@ const Products = () => {
       image: 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=100&h=100&fit=crop'
     }
   ];
+
+  // Filter products based on search term
+  const filteredProducts = useMemo(() => {
+    if (!searchTerm.trim()) {
+      return products;
+    }
+    
+    const lowerSearchTerm = searchTerm.toLowerCase();
+    return products.filter(product => 
+      product.name.toLowerCase().includes(lowerSearchTerm) ||
+      product.category.toLowerCase().includes(lowerSearchTerm) ||
+      product.status.toLowerCase().includes(lowerSearchTerm)
+    );
+  }, [searchTerm]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -175,6 +189,8 @@ const Products = () => {
               <input
                 type="text"
                 placeholder="Search products..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full sm:w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all text-sm sm:text-base"
               />
             </div>
@@ -195,48 +211,61 @@ const Products = () => {
         </div>
       </div>
 
+      {/* Search Results Counter */}
+      {searchTerm && (
+        <div className="text-sm text-gray-600">
+          {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''} found for "{searchTerm}"
+        </div>
+      )}
+
       {/* Products Grid - Mobile Cards */}
       <div className="block sm:hidden space-y-4">
-        {products.map((product) => (
-          <div key={product.id} className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow">
-            <div className="flex items-start space-x-3">
-              <img
-                className="h-16 w-16 rounded-lg object-cover flex-shrink-0"
-                src={product.image}
-                alt={product.name}
-              />
-              <div className="flex-1 min-w-0">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h3 className="text-sm font-medium text-gray-900 truncate">{product.name}</h3>
-                    <p className="text-xs text-gray-500 mt-1">{product.category}</p>
-                    <div className="flex items-center space-x-2 mt-2">
-                      <span className="text-sm font-semibold text-gray-900">{product.price}</span>
-                      <span className="text-xs text-gray-500">Stock: {product.stock}</span>
+        {filteredProducts.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            {searchTerm ? 'No products found matching your search.' : 'No products available.'}
+          </div>
+        ) : (
+          filteredProducts.map((product) => (
+            <div key={product.id} className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow">
+              <div className="flex items-start space-x-3">
+                <img
+                  className="h-16 w-16 rounded-lg object-cover flex-shrink-0"
+                  src={product.image}
+                  alt={product.name}
+                />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <h3 className="text-sm font-medium text-gray-900 truncate">{product.name}</h3>
+                      <p className="text-xs text-gray-500 mt-1">{product.category}</p>
+                      <div className="flex items-center space-x-2 mt-2">
+                        <span className="text-sm font-semibold text-gray-900">{product.price}</span>
+                        <span className="text-xs text-gray-500">Stock: {product.stock}</span>
+                      </div>
                     </div>
+                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(product.status)}`}>
+                      {product.status}
+                    </span>
                   </div>
-                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(product.status)}`}>
-                    {product.status}
-                  </span>
-                </div>
-                <div className="flex items-center space-x-2 mt-3">
-                  <button 
-                    onClick={() => setViewingProduct(product)}
-                    className="flex-1 px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
-                  >
-                    View
-                  </button>
-                  <button 
-                    onClick={() => setSelectedProduct(product)}
-                    className="flex-1 px-3 py-1 text-xs bg-gray-900 text-white rounded hover:bg-gray-800 transition-colors"
-                  >
-                    Edit
-                  </button>
+                  <div className="flex items-center space-x-2 mt-3">
+                    <button 
+                      onClick={() => setViewingProduct(product)}
+                      className="flex-1 px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
+                    >
+                      View
+                    </button>
+                    <button 
+                      onClick={() => setSelectedProduct(product)}
+                      className="flex-1 px-3 py-1 text-xs bg-gray-900 text-white rounded hover:bg-gray-800 transition-colors"
+                    >
+                      Edit
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
       {/* Products Table - Desktop */}
@@ -266,57 +295,65 @@ const Products = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {products.map((product) => (
-                <tr key={product.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-4 lg:px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <img
-                        className="h-8 w-8 lg:h-10 lg:w-10 rounded-lg object-cover"
-                        src={product.image}
-                        alt={product.name}
-                      />
-                      <div className="ml-3 lg:ml-4">
-                        <div className="text-sm font-medium text-gray-900">{product.name}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                    {product.category}
-                  </td>
-                  <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                    {product.price}
-                  </td>
-                  <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                    {product.stock}
-                  </td>
-                  <td className="px-4 lg:px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(product.status)}`}>
-                      {product.status}
-                    </span>
-                  </td>
-                  <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <div className="flex items-center space-x-2">
-                      <button 
-                        onClick={() => setViewingProduct(product)}
-                        className="p-1 rounded hover:bg-gray-100 transition-colors"
-                        title="View Details"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
-                      <button 
-                        onClick={() => setSelectedProduct(product)}
-                        className="p-1 rounded hover:bg-gray-100 transition-colors"
-                        title="Edit Product"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button className="p-1 rounded hover:bg-gray-100 transition-colors" title="More Options">
-                        <MoreHorizontal className="w-4 h-4" />
-                      </button>
-                    </div>
+              {filteredProducts.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-4 lg:px-6 py-8 text-center text-gray-500">
+                    {searchTerm ? 'No products found matching your search.' : 'No products available.'}
                   </td>
                 </tr>
-              ))}
+              ) : (
+                filteredProducts.map((product) => (
+                  <tr key={product.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-4 lg:px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <img
+                          className="h-8 w-8 lg:h-10 lg:w-10 rounded-lg object-cover"
+                          src={product.image}
+                          alt={product.name}
+                        />
+                        <div className="ml-3 lg:ml-4">
+                          <div className="text-sm font-medium text-gray-900">{product.name}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      {product.category}
+                    </td>
+                    <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      {product.price}
+                    </td>
+                    <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                      {product.stock}
+                    </td>
+                    <td className="px-4 lg:px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(product.status)}`}>
+                        {product.status}
+                      </span>
+                    </td>
+                    <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <div className="flex items-center space-x-2">
+                        <button 
+                          onClick={() => setViewingProduct(product)}
+                          className="p-1 rounded hover:bg-gray-100 transition-colors"
+                          title="View Details"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                        <button 
+                          onClick={() => setSelectedProduct(product)}
+                          className="p-1 rounded hover:bg-gray-100 transition-colors"
+                          title="Edit Product"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button className="p-1 rounded hover:bg-gray-100 transition-colors" title="More Options">
+                          <MoreHorizontal className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
