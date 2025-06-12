@@ -1,11 +1,19 @@
-import React, { useState } from 'react';
-import { Save, User, Shield, Bell, Cog, Upload, Eye, EyeOff } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Save, User, Shield, Bell, Cog, Upload, Eye, EyeOff, Camera, X } from 'lucide-react';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { useToast } from '@/hooks/use-toast';
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState('profile');
   const [saved, setSaved] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
+  
   const [formData, setFormData] = useState({
+    avatar: '',
     siteName: 'LocalVerse',
     siteDescription: 'Your local eCommerce marketplace',
     currency: 'USD',
@@ -37,10 +45,95 @@ const Settings = () => {
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
     console.log('Settings saved:', formData);
+    toast({
+      title: "Settings saved",
+      description: "Your settings have been updated successfully.",
+    });
   };
 
   const handleInputChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const validateFile = (file: File): boolean => {
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+    const maxSize = 2 * 1024 * 1024; // 2MB
+
+    if (!allowedTypes.includes(file.type)) {
+      toast({
+        title: "Invalid file type",
+        description: "Please select a JPG, PNG, or GIF image.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    if (file.size > maxSize) {
+      toast({
+        title: "File too large",
+        description: "Please select an image smaller than 2MB.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!validateFile(file)) return;
+
+    setIsUploading(true);
+
+    try {
+      // Create preview URL
+      const previewUrl = URL.createObjectURL(file);
+      setAvatarPreview(previewUrl);
+
+      // Simulate upload delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      // In a real app, you would upload to your server here
+      // const uploadedUrl = await uploadToServer(file);
+      
+      handleInputChange('avatar', previewUrl);
+      
+      toast({
+        title: "Avatar updated",
+        description: "Your profile picture has been updated successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Upload failed",
+        description: "Failed to upload avatar. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const removeAvatar = () => {
+    setAvatarPreview(null);
+    handleInputChange('avatar', '');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+    toast({
+      title: "Avatar removed",
+      description: "Your profile picture has been removed.",
+    });
+  };
+
+  const getInitials = () => {
+    return `${formData.firstName.charAt(0)}${formData.lastName.charAt(0)}`;
   };
 
   const TabContent = () => {
@@ -50,20 +143,87 @@ const Settings = () => {
           <div className="space-y-6">
             <div>
               <h3 className="text-lg font-medium text-gray-900 mb-4">Profile Information</h3>
-              <div className="space-y-4">
-                <div className="flex items-center space-x-6">
-                  <div className="w-20 h-20 bg-gradient-to-br from-gray-600 to-gray-800 rounded-full flex items-center justify-center">
-                    <span className="text-white text-2xl font-medium">A</span>
+              <div className="space-y-6">
+                {/* Avatar Section */}
+                <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">
+                  <div className="relative group">
+                    <Avatar className="w-20 h-20">
+                      <AvatarImage 
+                        src={avatarPreview || formData.avatar} 
+                        alt="Profile avatar"
+                        className="object-cover"
+                      />
+                      <AvatarFallback className="bg-gradient-to-br from-gray-600 to-gray-800 text-white text-2xl font-medium">
+                        {getInitials()}
+                      </AvatarFallback>
+                    </Avatar>
+                    
+                    {/* Remove avatar button */}
+                    {(avatarPreview || formData.avatar) && (
+                      <button
+                        onClick={removeAvatar}
+                        className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100"
+                        title="Remove avatar"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    )}
                   </div>
-                  <div>
-                    <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                      <Upload className="w-4 h-4" />
-                      <span>Change Avatar</span>
-                    </button>
-                    <p className="text-sm text-gray-500 mt-1">JPG, PNG or GIF (max. 2MB)</p>
+                  
+                  <div className="flex-1">
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <button
+                        onClick={handleAvatarClick}
+                        disabled={isUploading}
+                        className="flex items-center justify-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {isUploading ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900"></div>
+                            <span>Uploading...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="w-4 h-4" />
+                            <span>Change Avatar</span>
+                          </>
+                        )}
+                      </button>
+                      
+                      {(avatarPreview || formData.avatar) && (
+                        <button
+                          onClick={removeAvatar}
+                          className="flex items-center justify-center space-x-2 px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+                        >
+                          <X className="w-4 h-4" />
+                          <span>Remove</span>
+                        </button>
+                      )}
+                    </div>
+                    
+                    <p className="text-sm text-gray-500 mt-2">
+                      JPG, PNG or GIF (max. 2MB). Recommended size: 400x400px
+                    </p>
+                    
+                    {isUploading && (
+                      <div className="mt-2">
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div className="bg-gray-600 h-2 rounded-full animate-pulse" style={{ width: '60%' }}></div>
+                        </div>
+                      </div>
+                    )}
                   </div>
+                  
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/jpg,image/png,image/gif"
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
                 </div>
                 
+                {/* Form Fields */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
