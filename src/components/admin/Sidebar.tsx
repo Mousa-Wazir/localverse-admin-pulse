@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { X, LayoutDashboard, Package, ShoppingCart, Users, AlertTriangle, Settings, LogOut } from 'lucide-react';
+import { X, LayoutDashboard, Package, ShoppingCart, Users, AlertTriangle, Settings, LogOut, Store } from 'lucide-react';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -16,6 +16,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, currentPage, onPage
     { id: 'products', label: 'Products', icon: Package },
     { id: 'orders', label: 'Orders', icon: ShoppingCart },
     { id: 'customers', label: 'Customers', icon: Users },
+    { id: 'sellers', label: 'Sellers', icon: Store },
     { id: 'reports', label: 'Reports', icon: AlertTriangle },
     { id: 'settings', label: 'Settings', icon: Settings }
   ];

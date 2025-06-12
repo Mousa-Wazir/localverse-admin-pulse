@@ -6,6 +6,7 @@ import Dashboard from './Dashboard';
 import Products from './Products';
 import Orders from './Orders';
 import Customers from './Customers';
+import Sellers from './Sellers';
 import Reports from './Reports';
 import Settings from './Settings';
 
@@ -42,6 +43,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout }) => {
         return <Orders />;
       case 'customers':
         return <Customers />;
+      case 'sellers':
+        return <Sellers />;
       case 'reports':
         return <Reports />;
       case 'settings':

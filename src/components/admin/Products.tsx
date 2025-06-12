@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { Plus, Search, Filter, Edit, Eye, MoreHorizontal } from 'lucide-react';
 import ProductDetail from './ProductDetail';
@@ -11,39 +12,57 @@ const Products = () => {
   const products = [
     {
       id: 1,
-      name: 'Wireless Headphones',
-      category: 'Electronics',
-      price: '$99.99',
-      stock: 45,
+      name: 'Handcrafted Wooden Chair',
+      category: 'Furniture',
+      price: '$299.99',
+      stock: 15,
       status: 'Active',
-      image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100&h=100&fit=crop'
+      image: 'https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=100&h=100&fit=crop'
     },
     {
       id: 2,
-      name: 'Coffee Mug',
-      category: 'Home & Garden',
-      price: '$14.99',
-      stock: 120,
+      name: 'Traditional Pottery Vase',
+      category: 'Handicrafts',
+      price: '$89.99',
+      stock: 25,
       status: 'Active',
-      image: 'https://images.unsplash.com/photo-1514228742587-6b1558fcf93a?w=100&h=100&fit=crop'
+      image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=100&h=100&fit=crop'
     },
     {
       id: 3,
-      name: 'Running Shoes',
-      category: 'Sports',
-      price: '$79.99',
-      stock: 28,
+      name: 'Decorative Wall Mirror',
+      category: 'Home Decor',
+      price: '$159.99',
+      stock: 8,
       status: 'Low Stock',
-      image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100&h=100&fit=crop'
+      image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=100&h=100&fit=crop'
     },
     {
       id: 4,
-      name: 'Desk Lamp',
-      category: 'Home & Garden',
-      price: '$34.99',
+      name: 'Natural Face Cream',
+      category: 'Health and Beauty',
+      price: '$49.99',
+      stock: 45,
+      status: 'Active',
+      image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=100&h=100&fit=crop'
+    },
+    {
+      id: 5,
+      name: 'Silk Scarf',
+      category: 'Clothing Accessories',
+      price: '$79.99',
       stock: 0,
       status: 'Out of Stock',
-      image: 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=100&h=100&fit=crop'
+      image: 'https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=100&h=100&fit=crop'
+    },
+    {
+      id: 6,
+      name: 'Wooden Dining Table',
+      category: 'Furniture',
+      price: '$899.99',
+      stock: 5,
+      status: 'Low Stock',
+      image: 'https://images.unsplash.com/photo-1549497538-303791108f95?w=100&h=100&fit=crop'
     }
   ];
 

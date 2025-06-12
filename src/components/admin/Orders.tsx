@@ -1,9 +1,9 @@
-
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Search, Filter, Download, Eye, MoreHorizontal } from 'lucide-react';
 
 const Orders = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const orders = [
     {
@@ -47,6 +47,21 @@ const Orders = () => {
       shippingAddress: '321 Elm St, City, State 98765'
     }
   ];
+
+  // Filter orders based on search term
+  const filteredOrders = useMemo(() => {
+    if (!searchTerm.trim()) {
+      return orders;
+    }
+    
+    const lowerSearchTerm = searchTerm.toLowerCase();
+    return orders.filter(order => 
+      order.id.toLowerCase().includes(lowerSearchTerm) ||
+      order.customer.toLowerCase().includes(lowerSearchTerm) ||
+      order.status.toLowerCase().includes(lowerSearchTerm) ||
+      order.paymentMethod.toLowerCase().includes(lowerSearchTerm)
+    );
+  }, [searchTerm]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -146,7 +161,7 @@ const Orders = () => {
   const exportToCSV = () => {
     const csvContent = [
       ['Order ID', 'Customer', 'Date', 'Amount', 'Status', 'Items'],
-      ...orders.map(order => [order.id, order.customer, order.date, order.amount, order.status, order.items])
+      ...filteredOrders.map(order => [order.id, order.customer, order.date, order.amount, order.status, order.items])
     ].map(row => row.join(',')).join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv' });
@@ -174,6 +189,8 @@ const Orders = () => {
               <input
                 type="text"
                 placeholder="Search orders..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full sm:w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all text-sm sm:text-base"
               />
             </div>
@@ -193,9 +210,16 @@ const Orders = () => {
         </div>
       </div>
 
+      {/* Search Results Counter */}
+      {searchTerm && (
+        <div className="text-sm text-gray-600">
+          {filteredOrders.length} order{filteredOrders.length !== 1 ? 's' : ''} found for "{searchTerm}"
+        </div>
+      )}
+
       {/* Orders Grid - Mobile Cards */}
       <div className="block sm:hidden space-y-4">
-        {orders.map((order) => (
+        {filteredOrders.map((order) => (
           <div key={order.id} className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow">
             <div className="flex items-start justify-between mb-3">
               <div>
@@ -260,7 +284,7 @@ const Orders = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {orders.map((order) => (
+              {filteredOrders.map((order) => (
                 <tr key={order.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {order.id}

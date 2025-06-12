@@ -1,10 +1,10 @@
-
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Search, Filter, Eye, AlertTriangle, Ban, MessageSquare, Clock } from 'lucide-react';
 import ReportDetail from './ReportDetail';
 
 const Reports = () => {
   const [selectedReport, setSelectedReport] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const reports = [
     {
@@ -61,6 +61,24 @@ const Reports = () => {
     }
   ];
 
+  // Filter reports based on search term
+  const filteredReports = useMemo(() => {
+    if (!searchTerm.trim()) {
+      return reports;
+    }
+    
+    const lowerSearchTerm = searchTerm.toLowerCase();
+    return reports.filter(report => 
+      report.id.toLowerCase().includes(lowerSearchTerm) ||
+      report.type.toLowerCase().includes(lowerSearchTerm) ||
+      report.reporter.toLowerCase().includes(lowerSearchTerm) ||
+      report.reported.toLowerCase().includes(lowerSearchTerm) ||
+      report.status.toLowerCase().includes(lowerSearchTerm) ||
+      report.priority.toLowerCase().includes(lowerSearchTerm) ||
+      report.reason.toLowerCase().includes(lowerSearchTerm)
+    );
+  }, [searchTerm]);
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Resolved': return 'bg-green-100 text-green-800';
@@ -96,6 +114,8 @@ const Reports = () => {
             <input
               type="text"
               placeholder="Search reports..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full sm:w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all text-sm sm:text-base"
             />
           </div>
@@ -105,6 +125,13 @@ const Reports = () => {
           </button>
         </div>
       </div>
+
+      {/* Search Results Counter */}
+      {searchTerm && (
+        <div className="text-sm text-gray-600">
+          {filteredReports.length} report{filteredReports.length !== 1 ? 's' : ''} found for "{searchTerm}"
+        </div>
+      )}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
@@ -159,7 +186,7 @@ const Reports = () => {
 
       {/* Reports Grid - Mobile Cards */}
       <div className="block sm:hidden space-y-4">
-        {reports.map((report, index) => (
+        {filteredReports.map((report, index) => (
           <div key={report.id} className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow" style={{animationDelay: `${index * 100}ms`}}>
             <div className="flex items-start justify-between mb-3">
               <div className="flex-1">
@@ -232,7 +259,7 @@ const Reports = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {reports.map((report, index) => (
+              {filteredReports.map((report, index) => (
                 <tr key={report.id} className="hover:bg-gray-50 transition-colors" style={{animationDelay: `${index * 100}ms`}}>
                   <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {report.id}
