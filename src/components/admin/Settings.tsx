@@ -1,9 +1,8 @@
-
 import React, { useState } from 'react';
 import { Save, User, Shield, Bell, Cog, Upload, Eye, EyeOff } from 'lucide-react';
 
 const Settings = () => {
-  const [activeTab, setActiveTab] = useState('general');
+  const [activeTab, setActiveTab] = useState('profile');
   const [saved, setSaved] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -28,10 +27,10 @@ const Settings = () => {
   });
 
   const tabs = [
+    { id: 'profile', label: 'Profile', icon: User },
     { id: 'general', label: 'General', icon: Cog },
     { id: 'security', label: 'Security', icon: Shield },
-    { id: 'notifications', label: 'Notifications', icon: Bell },
-    { id: 'profile', label: 'Profile', icon: User }
+    { id: 'notifications', label: 'Notifications', icon: Bell }
   ];
 
   const handleSave = () => {
@@ -46,6 +45,76 @@ const Settings = () => {
 
   const TabContent = () => {
     switch (activeTab) {
+      case 'profile':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Profile Information</h3>
+              <div className="space-y-4">
+                <div className="flex items-center space-x-6">
+                  <div className="w-20 h-20 bg-gradient-to-br from-gray-600 to-gray-800 rounded-full flex items-center justify-center">
+                    <span className="text-white text-2xl font-medium">A</span>
+                  </div>
+                  <div>
+                    <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                      <Upload className="w-4 h-4" />
+                      <span>Change Avatar</span>
+                    </button>
+                    <p className="text-sm text-gray-500 mt-1">JPG, PNG or GIF (max. 2MB)</p>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      First Name
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all"
+                      value={formData.firstName}
+                      onChange={(e) => handleInputChange('firstName', e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Last Name
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all"
+                      value={formData.lastName}
+                      onChange={(e) => handleInputChange('lastName', e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all"
+                      value={formData.email}
+                      onChange={(e) => handleInputChange('email', e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Phone
+                    </label>
+                    <input
+                      type="tel"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all"
+                      value={formData.phone}
+                      onChange={(e) => handleInputChange('phone', e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
       case 'general':
         return (
           <div className="space-y-6">
@@ -278,76 +347,6 @@ const Settings = () => {
                     />
                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gray-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gray-600"></div>
                   </label>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-      
-      case 'profile':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Profile Information</h3>
-              <div className="space-y-4">
-                <div className="flex items-center space-x-6">
-                  <div className="w-20 h-20 bg-gradient-to-br from-gray-600 to-gray-800 rounded-full flex items-center justify-center">
-                    <span className="text-white text-2xl font-medium">A</span>
-                  </div>
-                  <div>
-                    <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                      <Upload className="w-4 h-4" />
-                      <span>Change Avatar</span>
-                    </button>
-                    <p className="text-sm text-gray-500 mt-1">JPG, PNG or GIF (max. 2MB)</p>
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      First Name
-                    </label>
-                    <input
-                      type="text"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all"
-                      value={formData.firstName}
-                      onChange={(e) => handleInputChange('firstName', e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Last Name
-                    </label>
-                    <input
-                      type="text"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all"
-                      value={formData.lastName}
-                      onChange={(e) => handleInputChange('lastName', e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all"
-                      value={formData.email}
-                      onChange={(e) => handleInputChange('email', e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Phone
-                    </label>
-                    <input
-                      type="tel"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all"
-                      value={formData.phone}
-                      onChange={(e) => handleInputChange('phone', e.target.value)}
-                    />
-                  </div>
                 </div>
               </div>
             </div>
